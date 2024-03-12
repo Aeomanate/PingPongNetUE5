@@ -24,13 +24,7 @@ void ABall::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
 	FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!UKismetMathLibrary::NearlyEqual_FloatFloat(HitNormal.Z, 0))
-	{
-		return;
-	}
-
 	FVector Reflected = UKismetMathLibrary::GetReflectionVector(Direction, HitNormal);
-	Reflected.Z = 0;
 	Direction = Reflected;
 	UKismetMathLibrary::Vector_Normalize(Direction);
 }
