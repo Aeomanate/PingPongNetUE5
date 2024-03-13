@@ -3,28 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameMode.h"
-#include "PingPongGameMode.generated.h"
+#include "Engine/GameInstance.h"
+#include "PingPongGameInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PINGPONGNET_API APingPongGameMode : public AGameMode
+class PINGPONGNET_API UPingPongGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-
 public:
-    UFUNCTION(BlueprintCallable, Category = "Game")
-    bool ReadyToStartMatch_Implementation();
 
-    UFUNCTION(BlueprintCallable, Category = "Game")
-    bool ReadyToEndMatch_Implementation();
 
-    void OnPostLogin(AController* NewPlayer) override;
-
-    UFUNCTION(BlueprintCallable, Category = "Game")
-    void BeginPlay() override;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
@@ -44,6 +35,4 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
     FVector BallSpawnPoint;
-
-protected:
 };

@@ -30,4 +30,14 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	double Speed;
+
+	UPROPERTY(BlueprintReadOnly)
+	double IdleTimeSec;
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void SetMovableComponentIntoCache(UPrimitiveComponent* Component);
+
+private:
+	UPrimitiveComponent* MovableComponent;
+	double IdleTimePassed;
 };

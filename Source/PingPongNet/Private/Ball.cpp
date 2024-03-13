@@ -11,6 +11,8 @@ ABall::ABall()
 	PrimaryActorTick.bCanEverTick = true;
 	Speed = 2000;
 	Direction = { 0.8, 0.6, 0 };
+	MovableComponent = nullptr;
+	IdleTimeSec = 5;
 }
 
 // Called when the game starts or when spawned
@@ -29,10 +31,22 @@ void ABall::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
 	UKismetMathLibrary::Vector_Normalize(Direction);
 }
 
+void ABall::SetMovableComponentIntoCache(UPrimitiveComponent* Component)
+{
+	MovableComponent = Component;
+}
+
 // Called every frame
 void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!MovableComponent || IdleTimePassed < IdleTimeSec)
+	{
+		IdleTimePassed += DeltaTime;
+		return;
+	}
+
+	MovableComponent->SetPhysicsLinearVelocity(Direction * Speed);
 }
 
