@@ -6,6 +6,8 @@
 #include "GameFramework/GameMode.h"
 #include "PingPongGameMode.generated.h"
 
+class APlayerPawn;
+
 /**
  * 
  */
@@ -46,4 +48,13 @@ public:
     FVector BallSpawnPoint;
 
 protected:
+
+private:
+    bool CheckPrerequires() const;
+    APlayerController* GetPlayerController(AController* NewPlayer);
+    APlayerPawn* SpawnPlayerPawn();
+    void PreparePawn(APlayerPawn* PlayerPawn);
+    void PreparePlayerController(APlayerController* PlayerController);
+
+    AActor* SpawnBall();
 };

@@ -13,7 +13,6 @@ APlayerPawn::APlayerPawn()
 	MovingSpeed = 20;
 	InverseAxisX = false;
 	MovableComponent = nullptr;
-	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -38,9 +37,9 @@ void APlayerPawn::MoveLeftRightBroadcast_Implementation(float Bias)
 	FVector MoveVector { MovingSpeed, 0, 0 };
 	MoveVector *= Bias;
 
-	FTransform Transform = GetActorTransform();
+	FTransform Transform;
 	Transform.SetLocation(Transform.GetLocation() + MoveVector);
-	MovableComponent->SetWorldTransform(Transform, /* sweep */ true);
+	MovableComponent->AddWorldOffset(MoveVector, /* sweep */ true);
 
 	// FString FloatAsString = FString::SanitizeFloat(Bias * MovingSpeed);
 	// UE_LOG(LogTemp, Warning, TEXT("Inverse: %d, Move vector: %s"), InverseAxisX, *FloatAsString);
