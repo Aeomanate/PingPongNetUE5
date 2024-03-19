@@ -25,16 +25,11 @@ protected:
 	void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
 	FVector Direction;
-
-	UPROPERTY(BlueprintReadOnly)
 	double Speed;
-
-	UPROPERTY(BlueprintReadOnly)
 	double IdleTimeSec;
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable, Category = PingPong)
 	void SetMovableComponentIntoCache(UPrimitiveComponent* Component);
 
 private:

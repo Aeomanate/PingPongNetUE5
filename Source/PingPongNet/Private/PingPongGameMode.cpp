@@ -6,10 +6,14 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "PlayerPawn.h"
+#include "Engine/TriggerBox.h"
+#include "PlayerGate.h"
+#include "PingPongState.h"
+#include "PingPongPlayerState.h"
 
 bool APingPongGameMode::ReadyToStartMatch_Implementation()
 {
-    return this->NumPlayers == 2;
+    return IsMatchReady;
 }
 
 bool APingPongGameMode::ReadyToEndMatch_Implementation()
@@ -19,103 +23,56 @@ bool APingPongGameMode::ReadyToEndMatch_Implementation()
 
 void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 {
-    if (!CheckPrerequires())
-    {
-        return;
-    }
+    UPlayerLoginAdjuster(NewPlayer, NumPlayers - 1, &Defaults, GetValidWorld()).Adjust();
+    SCREEN_LOG("Player (id " + FString::FromInt(NewPlayer->GetPlayerState<APingPongPlayerState>()->GetPlayerId()) + ") logged in!");
 
-    APlayerController* PlayerController = nullptr;
-    APlayerPawn* PlayerPawn = nullptr;
-    
-    bool ControllerValid = (PlayerController = GetPlayerController(NewPlayer)) != nullptr;
-    bool PreparationDone = ControllerValid && (PlayerPawn = SpawnPlayerPawn()) != nullptr;
-    if (!PreparationDone)
-    {
-        return;
-    }
-    
-    PreparePawn(PlayerPawn);
-    PlayerController->Possess(PlayerPawn);
-    PreparePlayerController(PlayerController);
-
-    if (this->NumPlayers == 2)
+    if (NumPlayers == Defaults.Gameplay.MaxPlayers)
     {
         SpawnBall();
+        IsMatchReady = true;
     }
+}
+
+void APingPongGameMode::OnBallTriggersGate(int PlayerID)
+{
+    APingPongState* PingPongState = dynamic_cast<APingPongState*>(GetWorld()->GetGameState());
+    ++PingPongState->PlayerScores.FindOrAdd(PlayerID);
+    OnPlayerGotScore.Broadcast(PlayerID);
+    SCREEN_LOG("Player " + FString::FromInt(PlayerID) + " got a score. Total: " + FString::FromInt(PingPongState->PlayerScores[PlayerID]));
 }
 
 void APingPongGameMode::BeginPlay()
 {
-
-}
-
-bool APingPongGameMode::CheckPrerequires() const
-{
-    if (!GetWorld())
+    if (!GetValidWorld())
     {
-        UE_LOG(LogTemp, Warning, TEXT("World is invalid, wow!"));
-        return false;
+        return;
     }
-    if (NumPlayers > 2)
+
+    APingPongState* PingPongState = dynamic_cast<APingPongState*>(GetValidWorld()->GetGameState());
+    if (!PingPongState)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Trying to join %d'th player!"), NumPlayers);
-        return false;
+        ERROR("APingPongState is invalid, wow!");
+        return;
     }
-    if (NumPlayers > PlayerCameras.Num())
-    {
-        UE_LOG(LogTemp, Error, TEXT("Camera doesn't exist for %d player!"), NumPlayers - 1);
-        return false;
-    }
-    return true;
+
+    Defaults.Gameplay.MaxPlayers = 2;
+    Defaults.Gameplay.MaxScore = 10;
 }
 
-APlayerController* APingPongGameMode::GetPlayerController(AController* NewPlayer)
-{
-    APlayerController* PlayerController = dynamic_cast<APlayerController*>(NewPlayer);
-    if (!PlayerController)
-    {
-        UE_LOG(LogTemp, Error, TEXT("PlayerController for %d player invalid!"), NumPlayers - 1);
-        return nullptr;
-    }
-    UE_LOG(LogTemp, Warning, TEXT("PlayerController for %d player valid!"), NumPlayers - 1);
-    return PlayerController;
-}
-
-APlayerPawn* APingPongGameMode::SpawnPlayerPawn()
-{
-    APlayerPawn* PlayerPawn = dynamic_cast<APlayerPawn*>(GetWorld()->SpawnActor(PlayerPawnClass->GetDefaultObject()->GetClass(), &PlayerSpawnPoints[NumPlayers - 1]));
-    if (!PlayerPawn)
-    {
-        UE_LOG(LogTemp, Error, TEXT("PlayerPawn for %d player not created!"), NumPlayers - 1);
-        return nullptr;
-    }
-    UE_LOG(LogTemp, Warning, TEXT("PlayerPawn for %d player spawned!"), NumPlayers - 1);
-    return PlayerPawn;
-}
-
-void APingPongGameMode::PreparePawn(APlayerPawn* PlayerPawn)
-{
-    PlayerPawn->InverseAxisX = PlayerInputInverseX[NumPlayers - 1];
-}
-
-void APingPongGameMode::PreparePlayerController(APlayerController* PlayerController)
-{
-    PlayerController->ClientSetViewTarget(PlayerCameras[NumPlayers - 1]);
-    PlayerController->SetViewTargetWithBlend(PlayerCameras[NumPlayers - 1], 1);
-    UE_LOG(LogTemp, Warning, TEXT("Camera installed for %d player!"), NumPlayers - 1);
-}
 
 AActor* APingPongGameMode::SpawnBall()
 {
     FTransform BallStartTransform;
-    BallStartTransform.SetTranslation(BallSpawnPoint);
+    BallStartTransform.SetTranslation(Defaults.Field.SpawnPointBall);
 
-    AActor* Ball = GetWorld()->SpawnActor(BallClass->GetDefaultObject()->GetClass(), &BallStartTransform);
+    UClass* BallClass = Defaults.Field.Classes.Ball->GetDefaultObject()->GetClass();
+    AActor* Ball = GetWorld()->SpawnActor(BallClass, &BallStartTransform);
     if (!Ball)
     {
-        UE_LOG(LogTemp, Error, TEXT("Ball not spawned!"));
+        ERROR("Ball not spawned!");
         return nullptr;
     }
-    UE_LOG(LogTemp, Warning, TEXT("Ball spawned!"));
+    SCREEN_LOG("Ball spawned!");
     return Ball;
 }
+

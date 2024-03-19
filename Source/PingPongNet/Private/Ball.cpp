@@ -10,7 +10,7 @@ ABall::ABall()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Speed = 2000;
-	Direction = { 0.8, 0.6, 0 };
+	Direction = { FMath::RandRange(-100, 100)*1.f, FMath::RandRange(-100, 100)*1.f, 0 };
 	MovableComponent = nullptr;
 	IdleTimeSec = 5;
 }

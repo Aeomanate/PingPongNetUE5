@@ -4,9 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "UtilityGameTypes.h"
+#include "Utility.h"
+#include "PlayerLoginAdjuster.h"
+#include "Delegates/Delegate.h"
 #include "PingPongGameMode.generated.h"
 
+DECLARE_EVENT_OneParam(APingPongGameMode, OnPlayerGotScoreEvent, int PlayerID);
+
 class APlayerPawn;
+class ATriggerBox;
+class APlayerGate;
 
 /**
  * 
@@ -16,45 +24,29 @@ class PINGPONGNET_API APingPongGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-public:
-    UFUNCTION(BlueprintCallable, Category = "Game")
+public: // Gamemode logic
     bool ReadyToStartMatch_Implementation();
-
-    UFUNCTION(BlueprintCallable, Category = "Game")
     bool ReadyToEndMatch_Implementation();
 
     void OnPostLogin(AController* NewPlayer) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Game")
+    UFUNCTION(BlueprintCallable, Category = "PingPong")
+    void OnBallTriggersGate(int PlayerId);
+
+    UFUNCTION(BlueprintCallable, Category = "PingPong")
     void BeginPlay() override;
 
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    TSubclassOf<APawn> PlayerPawnClass;
+public: // Delegates
+    OnPlayerGotScoreEvent OnPlayerGotScore;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    TSubclassOf<AActor> BallClass;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    TArray<ACameraActor*> PlayerCameras;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    TArray<FVector> PlayerSpawnPoints;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    TArray<bool> PlayerInputInverseX;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PingPongDefaults)
-    FVector BallSpawnPoint;
-
-protected:
-
-private:
-    bool CheckPrerequires() const;
-    APlayerController* GetPlayerController(AController* NewPlayer);
-    APlayerPawn* SpawnPlayerPawn();
-    void PreparePawn(APlayerPawn* PlayerPawn);
-    void PreparePlayerController(APlayerController* PlayerController);
-
+private: // Game initialization functions
     AActor* SpawnBall();
+
+public: // Members
+    UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
+    FPingPongDefaults Defaults;
+
+    UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
+    TSet<int> PlayerIDs;
+    bool IsMatchReady = false;
 };
