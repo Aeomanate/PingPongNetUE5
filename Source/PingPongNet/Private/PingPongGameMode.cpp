@@ -38,10 +38,7 @@ void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 
 void APingPongGameMode::OnBallTriggersGate(int PlayerID)
 {
-    APingPongState* PingPongState = dynamic_cast<APingPongState*>(GetWorld()->GetGameState());
-    ++PingPongState->PlayerScores.FindOrAdd(PlayerID);
     OnPlayerGotScore.Broadcast(PlayerID);
-    SCREEN_LOG("Player " + FString::FromInt(PlayerID) + " got a score. Total: " + FString::FromInt(PingPongState->PlayerScores[PlayerID]));
 }
 
 void APingPongGameMode::BeginPlay()
@@ -51,7 +48,7 @@ void APingPongGameMode::BeginPlay()
         return;
     }
 
-    APingPongState* PingPongState = dynamic_cast<APingPongState*>(GetValidWorld()->GetGameState());
+    APingPongState* PingPongState = Cast<APingPongState>(GetValidWorld()->GetGameState());
     if (!PingPongState)
     {
         ERROR("APingPongState is invalid, wow!");

@@ -14,9 +14,16 @@ class PINGPONGNET_API APingPongState : public AGameState
 {
 	GENERATED_BODY()
 public:
+	using PlayerNetIDType = int;
+	using PlayerScoreType = int;
 
 public:
-	TMap<int, int> PlayerScores;
+	void HandleMatchIsWaitingToStart() override;
+
+	void HandlePlayerGotScore(int PlayerNetID);
+
+public:
+	TMap<PlayerNetIDType, PlayerScoreType> PlayerScores;
 
 private:
 

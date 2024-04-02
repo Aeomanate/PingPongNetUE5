@@ -61,7 +61,7 @@ bool UPlayerLoginAdjuster::SpawnPlayerPawn()
     UClass* PawnClass = Defaults->Field.Classes.PlayerPawn->GetDefaultObject()->GetClass();
     const FVector* SpawnPoint = &Defaults->Field.Players[PlayerIndex].PawnSpawnPoint;
 
-    PlayerPawn = dynamic_cast<APlayerPawn*>(World->SpawnActor(PawnClass, SpawnPoint));
+    PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(PawnClass, SpawnPoint));
     if (!PlayerPawn)
     {
         ERROR("PlayerPawn for %d player not created!", PlayerIndex);
@@ -91,7 +91,7 @@ void UPlayerLoginAdjuster::AdjustPlayerGate()
 
 bool UPlayerLoginAdjuster::SetValidPlayerController()
 {
-    PlayerController = dynamic_cast<APlayerController*>(DefaultPlayerController);
+    PlayerController = Cast<APlayerController>(DefaultPlayerController);
     if (!PlayerController)
     {
         ERROR("PlayerController invalid!");
