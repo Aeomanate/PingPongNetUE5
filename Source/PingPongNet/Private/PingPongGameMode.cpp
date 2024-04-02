@@ -23,10 +23,13 @@ bool APingPongGameMode::ReadyToEndMatch_Implementation()
 
 void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 {
-    UPlayerLoginAdjuster(NewPlayer, NumPlayers - 1, &Defaults, GetValidWorld()).Adjust();
-    SCREEN_LOG("Player (id " + FString::FromInt(NewPlayer->GetPlayerState<APingPongPlayerState>()->GetPlayerId()) + ") logged in!");
+    bool IsPlayerInitSuccess = UPlayerLoginAdjuster(NewPlayer, NumPlayers - 1, &GameDefaults, GetValidWorld()).Adjust();
 
-    if (NumPlayers == Defaults.Gameplay.MaxPlayers)
+    int PlayerNetID = NewPlayer->GetPlayerState<APingPongPlayerState>()->GetPlayerId();
+    FString PlayerNetIDStr = FString::FromInt(PlayerNetID);
+    SCREEN_LOG("Init player " + PlayerNetIDStr + " " + (IsPlayerInitSuccess ? "SUCCESS" : "FAIL"));
+
+    if (NumPlayers == GameDefaults.Gameplay.MaxPlayers)
     {
         SpawnBall();
         IsMatchReady = true;
@@ -55,17 +58,17 @@ void APingPongGameMode::BeginPlay()
         return;
     }
 
-    Defaults.Gameplay.MaxPlayers = 2;
-    Defaults.Gameplay.MaxScore = 10;
+    GameDefaults.Gameplay.MaxPlayers = 2;
+    GameDefaults.Gameplay.MaxScore = 10;
 }
 
 
 AActor* APingPongGameMode::SpawnBall()
 {
     FTransform BallStartTransform;
-    BallStartTransform.SetTranslation(Defaults.Field.SpawnPointBall);
+    BallStartTransform.SetTranslation(GameDefaults.Field.SpawnPointBall);
 
-    UClass* BallClass = Defaults.Field.Classes.Ball->GetDefaultObject()->GetClass();
+    UClass* BallClass = GameDefaults.Field.Classes.Ball->GetDefaultObject()->GetClass();
     AActor* Ball = GetWorld()->SpawnActor(BallClass, &BallStartTransform);
     if (!Ball)
     {

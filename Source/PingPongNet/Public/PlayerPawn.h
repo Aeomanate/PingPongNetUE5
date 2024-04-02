@@ -37,7 +37,7 @@ protected:
 	void MoveLeftRightRPC(float Bias);
 	void MoveLeftRightRPC_Implementation(float Bias);
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(Server, Unreliable)
 	void MoveLeftRightBroadcast(float Bias);
 	void MoveLeftRightBroadcast_Implementation(float Bias);
 

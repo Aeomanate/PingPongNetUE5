@@ -44,9 +44,7 @@ private: // Game initialization functions
 
 public: // Members
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
-    FPingPongDefaults Defaults;
+    FPingPongDefaults GameDefaults;
 
-    UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
-    TSet<int> PlayerIDs;
     bool IsMatchReady = false;
 };
