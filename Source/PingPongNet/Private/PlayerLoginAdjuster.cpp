@@ -3,6 +3,7 @@
 #include "Camera/CameraActor.h"
 #include "PlayerPawn.h"
 #include "PlayerGate.h"
+#include "PingPongPlayerController.h"
 #include "Utility.h"
 #include "PingPongPlayerState.h"
 #include "Containers/StringConv.h"
@@ -80,6 +81,7 @@ void UPlayerLoginAdjuster::AdjustPlayerController()
 {
     PlayerController->Possess(PlayerPawn);
     PlayerController->SetViewTargetWithBlend(Defaults->Field.Players[PlayerIndex].Camera, 1);
+    PlayerController->AdjustScoreRotationRPC(Defaults->Field.Players[PlayerIndex].Camera->GetActorLocation(), Defaults->Field.ActorScore);
     SCREEN_LOG("Camera installed for " + FString::FromInt(PlayerIndex) + " player!");
 }
 
@@ -91,7 +93,7 @@ void UPlayerLoginAdjuster::AdjustPlayerGate()
 
 bool UPlayerLoginAdjuster::SetValidPlayerController()
 {
-    PlayerController = Cast<APlayerController>(DefaultPlayerController);
+    PlayerController = Cast<APingPongPlayerController>(DefaultPlayerController);
     if (!PlayerController)
     {
         ERROR("PlayerController invalid!");

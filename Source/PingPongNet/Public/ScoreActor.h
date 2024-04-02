@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AScoreActor();
 
+	void RotateScoreToPlayerCamera(FVector CameraLocation);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,6 +29,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void RotateScoreToPlayerCamera(UWorld* World);
 
 };

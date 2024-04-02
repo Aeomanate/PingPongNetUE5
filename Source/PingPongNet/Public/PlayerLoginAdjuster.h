@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "UtilityGameTypes.h"
 
-class APlayerController;
+class APingPongPlayerController;
 class APlayerPawn;
 class APingPongPlayerState;
 
@@ -32,7 +32,7 @@ private:
 
     AController* DefaultPlayerController = { };
     APlayerPawn* PlayerPawn = { };
-    APlayerController* PlayerController = { };
+    APingPongPlayerController* PlayerController = { };
     APingPongPlayerState* PlayerState = { };
     UWorld* World = { };
 };

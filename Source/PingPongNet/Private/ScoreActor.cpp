@@ -5,6 +5,7 @@
 #include "Utility.h"
 #include "PingPongGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "PingPongPlayerState.h"
 
 // Sets default values
 AScoreActor::AScoreActor()
@@ -17,18 +18,15 @@ AScoreActor::AScoreActor()
 // Called when the game starts or when spawned
 void AScoreActor::BeginPlay()
 {
+	Super::BeginPlay();
+
 	UWorld* World = GetValidWorld();
 
-	Super::BeginPlay();
 	if (HasAuthority())
 	{
 		
 		APingPongGameMode* GameMode = Cast<APingPongGameMode>(World->GetAuthGameMode());
 		Init(GameMode->GameDefaults.Gameplay.MaxScore);
-	}
-	else
-	{
-		RotateScoreToPlayerCamera(World);
 	}
 }
 
@@ -39,16 +37,16 @@ void AScoreActor::Tick(float DeltaTime)
 
 }
 
-void AScoreActor::RotateScoreToPlayerCamera(UWorld* World)
+void AScoreActor::RotateScoreToPlayerCamera(FVector CameraLocation)
 {
+	UWorld* World = GetValidWorld();
 	APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(World);
 
-	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
-	FVector ScoreLocation = GetActorLocation();
+	FVector ScoreLocation = GetRootComponent()->GetComponentLocation();
 
 	FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(ScoreLocation, CameraLocation);
 	Rotator.SetComponentForAxis(EAxis::X, 0);
 	Rotator.SetComponentForAxis(EAxis::Y, 0);
-	SetActorRotation(Rotator);
+	GetRootComponent()->SetWorldRotation(Rotator);
 }
 

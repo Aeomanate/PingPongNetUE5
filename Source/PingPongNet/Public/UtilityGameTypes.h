@@ -4,6 +4,7 @@
 #include "UtilityGameTypes.generated.h"
 
 class APlayerGate;
+class AScoreActor;
 
 UENUM(BlueprintType)
 enum class EScoreOwner : uint8
@@ -58,7 +59,7 @@ public:
     FVector SpawnPointBall = { FVector::Zero() };
 
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
-    AActor* ActorScore = { };
+    AScoreActor* ActorScore = { };
 
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
     TArray<FPingPongPlayer> Players = { };

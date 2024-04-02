@@ -40,9 +40,6 @@ void APlayerPawn::MoveLeftRightBroadcast_Implementation(float Bias)
 	FTransform Transform;
 	Transform.SetLocation(Transform.GetLocation() + MoveVector);
 	MovableComponent->AddWorldOffset(MoveVector, /* sweep */ true);
-
-	// FString FloatAsString = FString::SanitizeFloat(Bias * MovingSpeed);
-	// UE_LOG(LogTemp, Warning, TEXT("Inverse: %d, Move vector: %s"), InverseAxisX, *FloatAsString);
 }
 
 
