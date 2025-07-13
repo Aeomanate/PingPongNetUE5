@@ -20,21 +20,7 @@ void APingPongState::HandleMatchIsWaitingToStart()
 }
 
 void APingPongState::HandlePlayerGotScore(int PlayerId)
-{
-    UWorld* World = GET_VALID_WORLD();
-    APingPongPlayerState* PlayerState = nullptr;
-    for (auto It = World->GetPlayerControllerIterator(); It; ++It)
-    {
-        if (auto* PS = It->Get()->GetPlayerState<APingPongPlayerState>())
-        {
-            if (PS->GetPlayerId() == PlayerId)
-            {
-                PlayerState = PS;
-                break;
-            }
-        }
-    }
-    
+{    
     ++PlayerScores.FindOrAdd(PlayerId, 0);
     SCREEN_LOG("Player {} got a score. Total: {}", PlayerId, PlayerScores[PlayerId]);
 }
