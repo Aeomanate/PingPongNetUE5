@@ -23,7 +23,13 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "PingPong")
 	void Init(int MaxScore);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "PingPong")
+	void OnIncreasedClientScore();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "PingPong")
+	void OnIncreasedOppopentScore();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

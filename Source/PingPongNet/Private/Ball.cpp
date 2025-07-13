@@ -22,7 +22,8 @@ void ABall::BeginPlay()
 	UKismetMathLibrary::Vector_Normalize(Direction);
 }
 
-void ABall::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other,
+void ABall::NotifyHit(
+	UPrimitiveComponent* MyComp, AActor* Other,
 	UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, 
 	FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -41,7 +42,12 @@ void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!MovableComponent || IdleTimePassed < IdleTimeSec)
+	if (!MovableComponent)
+	{
+		return;
+	}
+
+	if (IdleTimePassed < IdleTimeSec)
 	{
 		IdleTimePassed += DeltaTime;
 		return;
