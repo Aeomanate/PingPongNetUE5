@@ -79,7 +79,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FPingPongDefaults
+struct FPingPongDefaults // Filling is in the level blueprint
 {
     GENERATED_BODY()
 

@@ -11,7 +11,7 @@ class UPlayerLoginAdjuster
 {
 public:
     UPlayerLoginAdjuster() = default;
-    UPlayerLoginAdjuster(AController* NewPlayer, int PlayerIndex, FPingPongDefaults* Defaults, UWorld* World);
+    UPlayerLoginAdjuster(APingPongPlayerController* PlayerController, FPingPongDefaults* Defaults, UWorld* World);
 
     bool Adjust();
 
@@ -27,10 +27,9 @@ private:
     bool SetValidPlayerController();
     bool SetValidPlayerState();
 private:
-    int PlayerIndex = { };
+    int PlayerId = { };
     FPingPongDefaults* Defaults = { };
 
-    AController* DefaultPlayerController = { };
     APlayerPawn* PlayerPawn = { };
     APingPongPlayerController* PlayerController = { };
     APingPongPlayerState* PlayerState = { };

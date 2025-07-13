@@ -31,7 +31,7 @@ public: // Gamemode logic
     void OnPostLogin(AController* NewPlayer) override;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
-    void OnBallTriggersGate(int PlayerId);
+    void OnBallTriggersGate(int PlayerId) const;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
     void BeginPlay() override;

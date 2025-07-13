@@ -2,12 +2,10 @@
 
 
 #include "PingPongGameMode.h"
-#include "Camera/CameraActor.h"
+
+#include "PingPongPlayerController.h"
+
 #include "GameFramework/PlayerController.h"
-#include "GameFramework/SpectatorPawn.h"
-#include "PlayerPawn.h"
-#include "Engine/TriggerBox.h"
-#include "PlayerGate.h"
 #include "PingPongState.h"
 #include "PingPongPlayerState.h"
 
@@ -23,11 +21,14 @@ bool APingPongGameMode::ReadyToEndMatch_Implementation()
 
 void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 {
-    bool IsPlayerInitSuccess = UPlayerLoginAdjuster(NewPlayer, NumPlayers - 1, &GameDefaults, GetValidWorld()).Adjust();
+    int PlayerId = NewPlayer->GetPlayerState<APingPongPlayerState>()->PlayerId = NumPlayers;
+    bool IsPlayerInitSuccess = UPlayerLoginAdjuster(
+        Cast<APingPongPlayerController>(NewPlayer),
+        &GameDefaults,
+        GET_VALID_WORLD()
+        ).Adjust();
 
-    int PlayerNetID = NewPlayer->GetPlayerState<APingPongPlayerState>()->GetPlayerId();
-    FString PlayerNetIDStr = FString::FromInt(PlayerNetID);
-    SCREEN_LOG("Init player " + PlayerNetIDStr + " " + (IsPlayerInitSuccess ? "SUCCESS" : "FAIL"));
+    SCREEN_LOG("Init player {} was {}", PlayerId, (IsPlayerInitSuccess ? "SUCCESS" : "FAIL"));
 
     if (NumPlayers == GameDefaults.Gameplay.MaxPlayers)
     {
@@ -36,22 +37,22 @@ void APingPongGameMode::OnPostLogin(AController* NewPlayer)
     }
 }
 
-void APingPongGameMode::OnBallTriggersGate(int PlayerID)
+void APingPongGameMode::OnBallTriggersGate(int PlayerId) const
 {
-    OnPlayerGotScore.Broadcast(PlayerID);
+    OnPlayerGotScore.Broadcast(PlayerId);
 }
 
 void APingPongGameMode::BeginPlay()
 {
-    if (!GetValidWorld())
+    if (!GET_VALID_WORLD())
     {
         return;
     }
 
-    APingPongState* PingPongState = Cast<APingPongState>(GetValidWorld()->GetGameState());
+    APingPongState* PingPongState = Cast<APingPongState>(GET_VALID_WORLD()->GetGameState());
     if (!PingPongState)
     {
-        ERROR("APingPongState is invalid, wow!");
+        SCREEN_ERROR("APingPongState is invalid, wow!");
         return;
     }
 
@@ -69,7 +70,7 @@ AActor* APingPongGameMode::SpawnBall()
     AActor* Ball = GetWorld()->SpawnActor(BallClass, &BallStartTransform);
     if (!Ball)
     {
-        ERROR("Ball not spawned!");
+        SCREEN_ERROR("Ball not spawned!");
         return nullptr;
     }
     SCREEN_LOG("Ball spawned!");

@@ -20,7 +20,7 @@ void AScoreActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetValidWorld();
+	UWorld* World = GET_VALID_WORLD();
 
 	if (HasAuthority())
 	{
@@ -39,7 +39,7 @@ void AScoreActor::Tick(float DeltaTime)
 
 void AScoreActor::RotateScoreToPlayerCamera(FVector CameraLocation)
 {
-	UWorld* World = GetValidWorld();
+	UWorld* World = GET_VALID_WORLD();
 	APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(World);
 
 	FVector ScoreLocation = GetRootComponent()->GetComponentLocation();

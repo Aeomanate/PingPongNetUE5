@@ -2,8 +2,8 @@
 
 
 #include "PingPongState.h"
-#include "Net/UnrealNetwork.h"
 #include "PingPongGameMode.h"
+#include "PingPongPlayerState.h"
 #include "Utility.h"
 
 void APingPongState::HandleMatchIsWaitingToStart()
@@ -13,15 +13,28 @@ void APingPongState::HandleMatchIsWaitingToStart()
         return;
     }
 
-    UWorld* World = GetValidWorld();
+    UWorld* World = GET_VALID_WORLD();
     AGameModeBase* BaseGamemode = World->GetAuthGameMode();
     APingPongGameMode* GameMode = Cast<APingPongGameMode>(BaseGamemode);
     GameMode->OnPlayerGotScore.AddUObject(this, &APingPongState::HandlePlayerGotScore);
 }
 
-void APingPongState::HandlePlayerGotScore(int PlayerNetID)
+void APingPongState::HandlePlayerGotScore(int PlayerId)
 {
-    ++PlayerScores.FindOrAdd(PlayerNetID, 0);
-    SCREEN_LOG("Player " + FString::FromInt(PlayerNetID) + " got a score. Total: " + FString::FromInt(PlayerScores[PlayerNetID]));
-
+    UWorld* World = GET_VALID_WORLD();
+    APingPongPlayerState* PlayerState = nullptr;
+    for (auto It = World->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (auto* PS = It->Get()->GetPlayerState<APingPongPlayerState>())
+        {
+            if (PS->GetPlayerId() == PlayerId)
+            {
+                PlayerState = PS;
+                break;
+            }
+        }
+    }
+    
+    ++PlayerScores.FindOrAdd(PlayerId, 0);
+    SCREEN_LOG("Player {} got a score. Total: {}", PlayerId, PlayerScores[PlayerId]);
 }

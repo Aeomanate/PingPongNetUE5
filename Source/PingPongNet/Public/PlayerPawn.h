@@ -41,7 +41,7 @@ protected:
 	void MoveLeftRightBroadcast(float Bias);
 	void MoveLeftRightBroadcast_Implementation(float Bias);
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable, Category = "PingPong")
 	void SetMovableComponentIntoCache(UPrimitiveComponent* Component);
 
 private:

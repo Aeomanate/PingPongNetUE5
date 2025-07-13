@@ -8,13 +8,13 @@
 #include "PingPongPlayerState.h"
 #include "Containers/StringConv.h"
 #include "Kismet/KismetMathLibrary.h"
+#include <format>
 
-UPlayerLoginAdjuster::UPlayerLoginAdjuster(AController* NewPlayer, int PlayerIndex, FPingPongDefaults* Defaults, UWorld* World)
-    : PlayerIndex{ PlayerIndex }
+UPlayerLoginAdjuster::UPlayerLoginAdjuster(APingPongPlayerController* PlayerController, FPingPongDefaults* Defaults, UWorld* World)
+    : PlayerId{ PlayerController->GetPlayerState<APingPongPlayerState>()->PlayerId }
     , Defaults{ Defaults }
-    , DefaultPlayerController{ NewPlayer }
     , PlayerPawn{ nullptr }
-    , PlayerController{ nullptr }
+    , PlayerController{ PlayerController }
     , World(World)
 {
         
@@ -44,14 +44,14 @@ bool UPlayerLoginAdjuster::CheckPrerequires() const
     {
         return false;
     }
-    if (PlayerIndex >= Defaults->Gameplay.MaxPlayers)
+    if (PlayerId > Defaults->Gameplay.MaxPlayers)
     {
-        ERROR("Trying to join %d'th player, above %d!", PlayerIndex+1, Defaults->Gameplay.MaxPlayers);
+        SCREEN_ERROR("Trying to join player {}, above max {}!", PlayerId, Defaults->Gameplay.MaxPlayers);
         return false;
     }
-    if (PlayerIndex >= Defaults->Field.Players.Num())
+    if (PlayerId > Defaults->Field.Players.Num())
     {
-        ERROR("Camera doesn't exist for %d player!", PlayerIndex);
+        SCREEN_ERROR("Camera doesn't exist for player {}!", PlayerId);
         return false;
     }
     return true;
@@ -60,46 +60,45 @@ bool UPlayerLoginAdjuster::CheckPrerequires() const
 bool UPlayerLoginAdjuster::SpawnPlayerPawn()
 {
     UClass* PawnClass = Defaults->Field.Classes.PlayerPawn->GetDefaultObject()->GetClass();
-    const FVector* SpawnPoint = &Defaults->Field.Players[PlayerIndex].PawnSpawnPoint;
+    const FVector* SpawnPoint = &Defaults->Field.Players[PlayerId-1].PawnSpawnPoint;
 
     PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(PawnClass, SpawnPoint));
     if (!PlayerPawn)
     {
-        ERROR("PlayerPawn for %d player not created!", PlayerIndex);
+        SCREEN_ERROR("PlayerPawn for %d player not created!", PlayerId);
         return false;
     }
-    SCREEN_LOG("Pawn installed for " + FString::FromInt(PlayerIndex) + " player!");
+    SCREEN_LOG("Pawn installed for {} player!", PlayerId);
     return true;
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerPawn()
 {
-    PlayerPawn->InverseAxisX = Defaults->Field.Players[PlayerIndex].InputInverseX;
+    PlayerPawn->InverseAxisX = Defaults->Field.Players[PlayerId-1].InputInverseX;
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerController()
 {
     PlayerController->Possess(PlayerPawn);
-    PlayerController->SetViewTargetWithBlend(Defaults->Field.Players[PlayerIndex].Camera, 1);
-    PlayerController->AdjustScoreRotationRPC(Defaults->Field.Players[PlayerIndex].Camera->GetActorLocation(), Defaults->Field.ActorScore);
-    SCREEN_LOG("Camera installed for " + FString::FromInt(PlayerIndex) + " player!");
+    PlayerController->SetViewTargetWithBlend(Defaults->Field.Players[PlayerId-1].Camera, 1);
+    PlayerController->AdjustScoreRotationRPC(Defaults->Field.Players[PlayerId-1].Camera->GetActorLocation(), Defaults->Field.ActorScore);
+    SCREEN_LOG("Camera installed for {} player!", PlayerId);
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerGate()
 {
-    Defaults->Field.Players[PlayerIndex].Gate->PlayerID = PlayerState->GetPlayerId();
-    SCREEN_LOG("Gate installed for " + FString::FromInt(PlayerIndex) + " player!");
+    Defaults->Field.Players[PlayerId-1].Gate->PlayerId = PlayerId;
+    SCREEN_LOG("Gate installed for player with index {}!", PlayerId);
 }
 
 bool UPlayerLoginAdjuster::SetValidPlayerController()
 {
-    PlayerController = Cast<APingPongPlayerController>(DefaultPlayerController);
     if (!PlayerController)
     {
-        ERROR("PlayerController invalid!");
+        SCREEN_ERROR("PlayerController invalid!");
         return false;
     }
-    LOG("PlayerController valid!");
+    SCREEN_LOG("PlayerController valid!");
     return true;
 }
 
@@ -108,9 +107,9 @@ bool UPlayerLoginAdjuster::SetValidPlayerState()
     PlayerState = PlayerController->GetPlayerState<APingPongPlayerState>();
     if (!PlayerState)
     {
-        ERROR("PingPongPlayerState invalid!");
+        SCREEN_ERROR("PingPongPlayerState invalid!");
         return false;
     }
-    LOG("PingPongPlayerState valid!");
+    SCREEN_LOG("PingPongPlayerState valid!");
     return true;
 }

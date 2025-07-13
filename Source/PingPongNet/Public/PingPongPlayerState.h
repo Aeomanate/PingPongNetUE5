@@ -15,4 +15,6 @@ class PINGPONGNET_API APingPongPlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
+
+	int PlayerId;
 };
