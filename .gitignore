@@ -1,8 +1,9 @@
-Binaries
-DerivedDataCache
-Intermediate
-Saved
-build/*
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+Stage/
 .vscode
 .vs
 .vsconfig

@@ -1,3 +1,3 @@
-﻿set ServerExePath=%cd%\build\server\PingPongNetServer.exe
+﻿set ServerExePath=%cd%\Build\Server\PingPongNetServer.exe
 
 start "" "%ServerExePath%" -log
