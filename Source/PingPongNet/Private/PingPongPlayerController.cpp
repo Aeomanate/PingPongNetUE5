@@ -13,13 +13,26 @@ void APingPongPlayerController::AdjustScoreRotationRPC_Implementation(FVector Ca
 
 void APingPongPlayerController::NotifyClientScoreChangedRPC_Implementation(int ClientScore, int OpponentScore) const
 {
+    // Skip in editor preview
+    if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor())
+    {
+        return;
+    }
+
     TArray<AActor*> FoundActors;
     UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("ScoreActor"), FoundActors);
 
-    check(FoundActors.Num() == 1);
+    if (FoundActors.Num() == 0)
+    {
+        // No score actors found, possibly in editor
+        return;
+    }
+
     auto* ScoreActor = Cast<AScoreActor>(FoundActors[0]);
-	
-    ScoreActor->OnScoresChanged(ClientScore, OpponentScore);
+    if (ScoreActor)
+    {
+        ScoreActor->OnScoresChanged(ClientScore, OpponentScore);
+    }
 }
 
 void APingPongPlayerController::BeginPlay()

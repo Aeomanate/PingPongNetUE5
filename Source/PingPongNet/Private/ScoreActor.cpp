@@ -27,14 +27,12 @@ void AScoreActor::BeginPlay()
 	UWorld* World = GET_VALID_WORLD();
 	APingPongGameMode* GameMode = Cast<APingPongGameMode>(World->GetAuthGameMode());
 	Init(GameMode->GameDefaults.Gameplay.MaxScore);
-	
 }
 
 // Called every frame
 void AScoreActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AScoreActor::RotateScoreToPlayerCamera(FVector CameraLocation)

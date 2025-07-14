@@ -12,7 +12,7 @@ class AScoreActor;
  * 
  */
 UCLASS()
-class PINGPONGNET_API APingPongPlayerController : public APlayerController
+class PINGPONGNET_API APingPongPlayerController: public APlayerController
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ public:
 
 	
 	UFUNCTION(Reliable, Client)
-	void NotifyClientScoreChangedRPC(int ClientScore, int OpponentScore) const ;
+	void NotifyClientScoreChangedRPC(int ClientScore, int OpponentScore) const;
 
 
 	void BeginPlay() override;

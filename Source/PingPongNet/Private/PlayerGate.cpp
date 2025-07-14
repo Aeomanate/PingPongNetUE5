@@ -9,9 +9,9 @@
 
 void APlayerGate::OnCollideWithBall() const
 {
+	SCREEN_LOG("Ball triggered gate on server!");
 	auto* GameMode = Cast<APingPongGameMode>(GET_VALID_WORLD()->GetAuthGameMode());
 	GameMode->OnBallTriggersGate(PlayerIngameId);
-	SCREEN_LOG("Ball triggered gate on server!");
 
 	int PlayerScore1 = GameMode->GetGameState<APingPongState>()->PlayerScores[0];
 	int PlayerScore2 = GameMode->GetGameState<APingPongState>()->PlayerScores[1];
@@ -22,10 +22,12 @@ void APlayerGate::OnCollideWithBall() const
 		int CurId = Cast<APingPongPlayerState>(It)->PlayerIngameId;
 		if (CurId == 1)
 		{
+			SCREEN_LOG("Sending to player #{} new scores: {} - {}", CurId, PlayerScore1, PlayerScore2);
 			Player->NotifyClientScoreChangedRPC(PlayerScore1, PlayerScore2);
 		}
 		else
 		{
+			SCREEN_LOG("Sending to player #{} new scores: {} - {}", CurId, PlayerScore2, PlayerScore1);
 			Player->NotifyClientScoreChangedRPC(PlayerScore2, PlayerScore1);
 		}
 	}

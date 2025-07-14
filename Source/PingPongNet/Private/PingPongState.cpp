@@ -3,7 +3,6 @@
 
 #include "PingPongState.h"
 #include "PingPongGameMode.h"
-#include "PingPongPlayerState.h"
 #include "Utility.h"
 
 void APingPongState::HandleMatchIsWaitingToStart()
@@ -28,6 +27,12 @@ void APingPongState::HandlePlayerGotScore(int PlayerIngameId)
 void APingPongState::BeginPlay()
 {
     Super::BeginPlay();
+
+    // Skip initialization in editor preview
+    if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor())
+    {
+        return;
+    }
 
     PlayerScores.Init(0, Cast<APingPongGameMode>(GetDefaultGameMode())->GameDefaults.Gameplay.MaxPlayers);
 }

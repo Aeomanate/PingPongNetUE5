@@ -2,4 +2,12 @@
 
 
 #include "PingPongPlayerState.h"
+#include "Net/UnrealNetwork.h"
+
+void APingPongPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(APingPongPlayerState, PlayerIngameId);
+}
 

@@ -16,7 +16,9 @@ class PINGPONGNET_API APingPongPlayerState : public APlayerState
 	
 public:
 
-	int PlayerIngameId;
+	UPROPERTY(Replicated)
+	int PlayerIngameId = -1;
 
-	
+	// Function to register properties for replication
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

@@ -54,10 +54,18 @@ void APingPongGameMode::OnBallTriggersGate(int PlayerIngameId) const
 
 void APingPongGameMode::BeginPlay()
 {
+	// Skip initialization in editor preview
+	if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor())
+	{
+		return;
+	}
+
 	if (!GET_VALID_WORLD() or GetWorld()->GetGameState()->PlayerArray.Num() != 2)
 	{
 		return;
 	}
+
+	SCREEN_LOG("GameMode BeginPlay - actual gameplay session");
 }
 
 AActor* APingPongGameMode::SpawnBall() const

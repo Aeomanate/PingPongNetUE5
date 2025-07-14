@@ -2,6 +2,10 @@
 
 
 #include "PlayerPawn.h"
+
+#include "PingPongPlayerState.h"
+#include "Utility.h"
+
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Net/UnrealNetwork.h"
 
@@ -19,6 +23,22 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	APingPongPlayerState* State = GetPlayerState<APingPongPlayerState>();
+	if (!State)
+	{
+		SCREEN_ERROR("PlayerState is null!");
+		return;
+	}
+
+	if (!HasAuthority())
+	{
+		SCREEN_WARNING("You are player #{}", State->PlayerIngameId);
+	}
+	else
+	{
+		SCREEN_LOG("You are server, created player #{}", State->PlayerIngameId);
+	}
 }
 
 void APlayerPawn::MoveLeftRightRPC_Implementation(float Bias)
