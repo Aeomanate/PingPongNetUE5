@@ -19,5 +19,11 @@ class PINGPONGNET_API APingPongPlayerController : public APlayerController
 public:
 	UFUNCTION(Unreliable, Client)
 	void AdjustScoreRotationRPC(FVector CameraLocation, AScoreActor* ScoreActor);
-	void AdjustScoreRotationRPC_Implementation(FVector CameraLocation, AScoreActor* ScoreActor);
+
+	
+	UFUNCTION(Reliable, Client)
+	void NotifyClientScoreChangedRPC(int ClientScore, int OpponentScore) const ;
+
+
+	void BeginPlay() override;
 };

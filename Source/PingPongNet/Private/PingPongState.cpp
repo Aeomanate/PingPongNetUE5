@@ -19,8 +19,15 @@ void APingPongState::HandleMatchIsWaitingToStart()
     GameMode->OnPlayerGotScore.AddUObject(this, &APingPongState::HandlePlayerGotScore);
 }
 
-void APingPongState::HandlePlayerGotScore(int PlayerId)
+void APingPongState::HandlePlayerGotScore(int PlayerIngameId)
 {    
-    ++PlayerScores.FindOrAdd(PlayerId, 0);
-    SCREEN_LOG("Player {} got a score. Total: {}", PlayerId, PlayerScores[PlayerId]);
+    ++PlayerScores[PlayerIngameId-1];
+    SCREEN_LOG("Player {} got a score. Total: {}", PlayerIngameId, PlayerScores[PlayerIngameId-1]);
+}
+
+void APingPongState::BeginPlay()
+{
+    Super::BeginPlay();
+
+    PlayerScores.Init(0, Cast<APingPongGameMode>(GetDefaultGameMode())->GameDefaults.Gameplay.MaxPlayers);
 }

@@ -15,7 +15,7 @@ class PINGPONGNET_API APlayerGate : public ATriggerBox
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadOnly, Category = PingPong)
-	int PlayerId;
+	int PlayerIngameId;
 
 	UFUNCTION(BlueprintCallable, Category = "PingPong")
 	void OnCollideWithBall() const;

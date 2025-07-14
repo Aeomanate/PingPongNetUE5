@@ -25,14 +25,12 @@ private:
     void AdjustPlayerGate();
 
     bool SetValidPlayerController();
-    bool SetValidPlayerState();
 private:
-    int PlayerId = { };
+    int PlayerIngameId = { };
     FPingPongDefaults* Defaults = { };
 
     APlayerPawn* PlayerPawn = { };
     APingPongPlayerController* PlayerController = { };
-    APingPongPlayerState* PlayerState = { };
     UWorld* World = { };
 };
 

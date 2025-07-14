@@ -9,71 +9,69 @@
 #include "PingPongState.h"
 #include "PingPongPlayerState.h"
 
+
 bool APingPongGameMode::ReadyToStartMatch_Implementation()
 {
-    return IsMatchReady;
+	return IsMatchReady;
 }
 
 bool APingPongGameMode::ReadyToEndMatch_Implementation()
 {
-    return false;
+	return false;
 }
 
 void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 {
-    int PlayerId = NewPlayer->GetPlayerState<APingPongPlayerState>()->PlayerId = NumPlayers;
-    bool IsPlayerInitSuccess = UPlayerLoginAdjuster(
-        Cast<APingPongPlayerController>(NewPlayer),
-        &GameDefaults,
-        GET_VALID_WORLD()
-        ).Adjust();
+	int PlayerIngameId = NewPlayer->GetPlayerState<APingPongPlayerState>()->PlayerIngameId = NumPlayers;
 
-    SCREEN_LOG("Init player {} was {}", PlayerId, (IsPlayerInitSuccess ? "SUCCESS" : "FAIL"));
+	if (NumPlayers == GameDefaults.Gameplay.MaxPlayers)
+	{
+		IsMatchReady = true;
+	}
 
-    if (NumPlayers == GameDefaults.Gameplay.MaxPlayers)
-    {
-        SpawnBall();
-        IsMatchReady = true;
-    }
+	bool IsPlayerInitSuccess = UPlayerLoginAdjuster(
+		Cast<APingPongPlayerController>(NewPlayer),
+		&GameDefaults,
+		GET_VALID_WORLD()
+	).Adjust();
+	SCREEN_LOG("Init player {} was {}", PlayerIngameId, (IsPlayerInitSuccess ? "SUCCESS" : "FAIL"));
+
+	if (IsMatchReady)
+	{
+		SCREEN_LOG("Match is ready!");
+		SpawnBall();
+	}
+	else
+	{
+		SCREEN_LOG("Match is not ready! Waiting for the second player...");
+	}
 }
 
-void APingPongGameMode::OnBallTriggersGate(int PlayerId) const
+void APingPongGameMode::OnBallTriggersGate(int PlayerIngameId) const
 {
-    OnPlayerGotScore.Broadcast(PlayerId);
+	OnPlayerGotScore.Broadcast(PlayerIngameId);
 }
 
 void APingPongGameMode::BeginPlay()
 {
-    if (!GET_VALID_WORLD())
-    {
-        return;
-    }
-
-    APingPongState* PingPongState = Cast<APingPongState>(GET_VALID_WORLD()->GetGameState());
-    if (!PingPongState)
-    {
-        SCREEN_ERROR("APingPongState is invalid, wow!");
-        return;
-    }
-
-    GameDefaults.Gameplay.MaxPlayers = 2;
-    GameDefaults.Gameplay.MaxScore = 10;
+	if (!GET_VALID_WORLD() or GetWorld()->GetGameState()->PlayerArray.Num() != 2)
+	{
+		return;
+	}
 }
 
-
-AActor* APingPongGameMode::SpawnBall()
+AActor* APingPongGameMode::SpawnBall() const
 {
-    FTransform BallStartTransform;
-    BallStartTransform.SetTranslation(GameDefaults.Field.SpawnPointBall);
+	FTransform BallStartTransform;
+	BallStartTransform.SetTranslation(GameDefaults.Field.SpawnPointBall);
 
-    UClass* BallClass = GameDefaults.Field.Classes.Ball->GetDefaultObject()->GetClass();
-    AActor* Ball = GetWorld()->SpawnActor(BallClass, &BallStartTransform);
-    if (!Ball)
-    {
-        SCREEN_ERROR("Ball not spawned!");
-        return nullptr;
-    }
-    SCREEN_LOG("Ball spawned!");
-    return Ball;
+	UClass* BallClass = GameDefaults.Field.Classes.Ball->GetDefaultObject()->GetClass();
+	AActor* Ball = GetWorld()->SpawnActor(BallClass, &BallStartTransform);
+	if (!Ball)
+	{
+		SCREEN_ERROR("Ball not spawned!");
+		return nullptr;
+	}
+	SCREEN_LOG("Ball spawned!");
+	return Ball;
 }
-

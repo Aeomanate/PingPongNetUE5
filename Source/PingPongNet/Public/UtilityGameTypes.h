@@ -72,20 +72,20 @@ struct FPingPongDefaultsGameplay
 
 public:
     UPROPERTY(BlueprintReadOnly, Category = PingPongDefaults)
-    int MaxPlayers = { };
+    int MaxPlayers = 2;
 
     UPROPERTY(BlueprintReadOnly, Category = PingPongDefaults)
-    int MaxScore = { };
+    int MaxScore = 10;
 };
 
 USTRUCT(BlueprintType)
-struct FPingPongDefaults // Filling is in the level blueprint
+struct FPingPongDefaults 
 {
     GENERATED_BODY()
 
 public:
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
-    FPingPongDefaultsField Field = { };
+    FPingPongDefaultsField Field = { }; // Filling is in the level blueprint
 
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)
     FPingPongDefaultsGameplay Gameplay = { };

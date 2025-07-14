@@ -10,7 +10,7 @@
 #include "Delegates/Delegate.h"
 #include "PingPongGameMode.generated.h"
 
-DECLARE_EVENT_OneParam(APingPongGameMode, OnPlayerGotScoreEvent, int PlayerID);
+DECLARE_EVENT_OneParam(APingPongGameMode, OnPlayerGotScoreEvent, int PlayerIngameId);
 
 class APlayerPawn;
 class ATriggerBox;
@@ -31,7 +31,7 @@ public: // Gamemode logic
     void OnPostLogin(AController* NewPlayer) override;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
-    void OnBallTriggersGate(int PlayerId) const;
+    void OnBallTriggersGate(int PlayerIngameId) const;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
     void BeginPlay() override;
@@ -40,7 +40,7 @@ public: // Delegates
     OnPlayerGotScoreEvent OnPlayerGotScore;
 
 private: // Game initialization functions
-    AActor* SpawnBall();
+    AActor* SpawnBall() const;
 
 public: // Members
     UPROPERTY(BlueprintReadWrite, Category = PingPongDefaults)

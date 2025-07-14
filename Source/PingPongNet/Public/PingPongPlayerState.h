@@ -16,7 +16,7 @@ class PINGPONGNET_API APingPongPlayerState : public APlayerState
 	
 public:
 
-	int PlayerId;
+	int PlayerIngameId;
 
 	
 };

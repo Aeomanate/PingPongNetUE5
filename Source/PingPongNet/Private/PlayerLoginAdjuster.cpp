@@ -11,7 +11,7 @@
 #include <format>
 
 UPlayerLoginAdjuster::UPlayerLoginAdjuster(APingPongPlayerController* PlayerController, FPingPongDefaults* Defaults, UWorld* World)
-    : PlayerId{ PlayerController->GetPlayerState<APingPongPlayerState>()->PlayerId }
+    : PlayerIngameId{ PlayerController->GetPlayerState<APingPongPlayerState>()->PlayerIngameId }
     , Defaults{ Defaults }
     , PlayerPawn{ nullptr }
     , PlayerController{ PlayerController }
@@ -25,7 +25,6 @@ bool UPlayerLoginAdjuster::Adjust()
     bool SuccessPreparation = 
         CheckPrerequires() &&
         SetValidPlayerController() &&
-        SetValidPlayerState() &&
         SpawnPlayerPawn();
     if (!SuccessPreparation)
     {
@@ -44,14 +43,14 @@ bool UPlayerLoginAdjuster::CheckPrerequires() const
     {
         return false;
     }
-    if (PlayerId > Defaults->Gameplay.MaxPlayers)
+    if (PlayerIngameId > Defaults->Gameplay.MaxPlayers)
     {
-        SCREEN_ERROR("Trying to join player {}, above max {}!", PlayerId, Defaults->Gameplay.MaxPlayers);
+        SCREEN_ERROR("Trying to join player {}, above max {}!", PlayerIngameId, Defaults->Gameplay.MaxPlayers);
         return false;
     }
-    if (PlayerId > Defaults->Field.Players.Num())
+    if (PlayerIngameId > Defaults->Field.Players.Num())
     {
-        SCREEN_ERROR("Camera doesn't exist for player {}!", PlayerId);
+        SCREEN_ERROR("Camera doesn't exist for player {}!", PlayerIngameId);
         return false;
     }
     return true;
@@ -60,35 +59,35 @@ bool UPlayerLoginAdjuster::CheckPrerequires() const
 bool UPlayerLoginAdjuster::SpawnPlayerPawn()
 {
     UClass* PawnClass = Defaults->Field.Classes.PlayerPawn->GetDefaultObject()->GetClass();
-    const FVector* SpawnPoint = &Defaults->Field.Players[PlayerId-1].PawnSpawnPoint;
+    const FVector* SpawnPoint = &Defaults->Field.Players[PlayerIngameId-1].PawnSpawnPoint;
 
     PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(PawnClass, SpawnPoint));
     if (!PlayerPawn)
     {
-        SCREEN_ERROR("PlayerPawn for %d player not created!", PlayerId);
+        SCREEN_ERROR("PlayerPawn for %d player not created!", PlayerIngameId);
         return false;
     }
-    SCREEN_LOG("Pawn installed for {} player!", PlayerId);
+    SCREEN_LOG("Pawn installed for {} player!", PlayerIngameId);
     return true;
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerPawn()
 {
-    PlayerPawn->InverseAxisX = Defaults->Field.Players[PlayerId-1].InputInverseX;
+    PlayerPawn->InverseAxisX = Defaults->Field.Players[PlayerIngameId-1].InputInverseX;
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerController()
 {
     PlayerController->Possess(PlayerPawn);
-    PlayerController->SetViewTargetWithBlend(Defaults->Field.Players[PlayerId-1].Camera, 1);
-    PlayerController->AdjustScoreRotationRPC(Defaults->Field.Players[PlayerId-1].Camera->GetActorLocation(), Defaults->Field.ActorScore);
-    SCREEN_LOG("Camera installed for {} player!", PlayerId);
+    PlayerController->SetViewTargetWithBlend(Defaults->Field.Players[PlayerIngameId-1].Camera, 1);
+    PlayerController->AdjustScoreRotationRPC(Defaults->Field.Players[PlayerIngameId-1].Camera->GetActorLocation(), Defaults->Field.ActorScore);
+    SCREEN_LOG("Camera installed for {} player!", PlayerIngameId);
 }
 
 void UPlayerLoginAdjuster::AdjustPlayerGate()
 {
-    Defaults->Field.Players[PlayerId-1].Gate->PlayerId = PlayerId;
-    SCREEN_LOG("Gate installed for player with index {}!", PlayerId);
+    Defaults->Field.Players[PlayerIngameId-1].Gate->PlayerIngameId = PlayerIngameId;
+    SCREEN_LOG("Gate installed for player with index {}!", PlayerIngameId);
 }
 
 bool UPlayerLoginAdjuster::SetValidPlayerController()
@@ -99,17 +98,5 @@ bool UPlayerLoginAdjuster::SetValidPlayerController()
         return false;
     }
     SCREEN_LOG("PlayerController valid!");
-    return true;
-}
-
-bool UPlayerLoginAdjuster::SetValidPlayerState()
-{
-    PlayerState = PlayerController->GetPlayerState<APingPongPlayerState>();
-    if (!PlayerState)
-    {
-        SCREEN_ERROR("PingPongPlayerState invalid!");
-        return false;
-    }
-    SCREEN_LOG("PingPongPlayerState valid!");
     return true;
 }
