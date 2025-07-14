@@ -15,14 +15,13 @@ public:
 	// Sets default values for this actor's properties
 	AScoreActor();
 
-	void RotateScoreToPlayerCamera(FVector CameraLocation);
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "PingPong")
 	void Init(int MaxScore);
+	
+	void RotateScoreToPlayerCamera(FVector CameraLocation);
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 public:	
 	// Called every frame

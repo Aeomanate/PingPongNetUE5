@@ -25,5 +25,8 @@ public:
 	void NotifyClientScoreChangedRPC(int ClientScore, int OpponentScore) const;
 
 
+	AScoreActor* FindScoreActor() const;
 	void BeginPlay() override;
+
+	virtual void PostRegisterAllComponents() override;
 };

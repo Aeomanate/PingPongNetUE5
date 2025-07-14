@@ -2,13 +2,32 @@
 
 
 #include "PingPongPlayerController.h"
+
+#include "PingPongGameMode.h"
 #include "ScoreActor.h"
+#include "Utility.h"
+
+#include "GameFramework/GameModeBase.h"
 
 #include "Kismet/GameplayStatics.h"
 
 void APingPongPlayerController::AdjustScoreRotationRPC_Implementation(FVector CameraLocation, AScoreActor* ScoreActor)
 {
 	ScoreActor->RotateScoreToPlayerCamera(CameraLocation);
+}
+
+AScoreActor* APingPongPlayerController::FindScoreActor() const
+{
+    TArray<AActor*> FoundActors;
+    UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("ScoreActor"), FoundActors);
+
+    if (FoundActors.Num() == 0)
+    {
+        // No score actors found, possibly in editor
+        return nullptr;
+    }
+    
+    return Cast<AScoreActor>(FoundActors[0]);
 }
 
 void APingPongPlayerController::NotifyClientScoreChangedRPC_Implementation(int ClientScore, int OpponentScore) const
@@ -19,24 +38,26 @@ void APingPongPlayerController::NotifyClientScoreChangedRPC_Implementation(int C
         return;
     }
 
-    TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("ScoreActor"), FoundActors);
-
-    if (FoundActors.Num() == 0)
+    AScoreActor* ScoreActor = FindScoreActor();
+    if (!ScoreActor)
     {
-        // No score actors found, possibly in editor
-        return;
+        SCREEN_ERROR("Score actor not found!")
     }
-
-    auto* ScoreActor = Cast<AScoreActor>(FoundActors[0]);
-    if (ScoreActor)
-    {
-        ScoreActor->OnScoresChanged(ClientScore, OpponentScore);
-    }
+    
+    ScoreActor->OnScoresChanged(ClientScore, OpponentScore);
+    
 }
 
 void APingPongPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	NotifyClientScoreChangedRPC(0, 0);
+    
+    FindScoreActor()->Init(10); // TODO: Refactor
+}
+
+void APingPongPlayerController::PostRegisterAllComponents()
+{
+    Super::PostRegisterAllComponents();
+    
+    FindScoreActor()->Init(10); // TODO: Refactor
 }

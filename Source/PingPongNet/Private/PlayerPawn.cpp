@@ -24,10 +24,16 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Skip initialization in editor preview
+	if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor() && !IsLocallyControlled()
+)
+	{
+		return;
+	}
+	
 	APingPongPlayerState* State = GetPlayerState<APingPongPlayerState>();
 	if (!State)
 	{
-		SCREEN_ERROR("PlayerState is null!");
 		return;
 	}
 
