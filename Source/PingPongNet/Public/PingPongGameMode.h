@@ -29,12 +29,15 @@ public: // Gamemode logic
     bool ReadyToEndMatch_Implementation();
 
     void OnPostLogin(AController* NewPlayer) override;
+    void HandleMatchHasStarted() override;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
     void OnBallTriggersGate(int PlayerIngameId) const;
 
     UFUNCTION(BlueprintCallable, Category = "PingPong")
     void BeginPlay() override;
+
+    const char* GetNetModeString() const;
 
 public: // Delegates
     OnPlayerGotScoreEvent OnPlayerGotScore;
