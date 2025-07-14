@@ -20,19 +20,16 @@ void APingPongState::HandleMatchIsWaitingToStart()
 
 void APingPongState::HandlePlayerGotScore(int PlayerIngameId)
 {    
-    ++PlayerScores[PlayerIngameId-1];
-    SCREEN_LOG("Player {} got a score. Total: {}", PlayerIngameId, PlayerScores[PlayerIngameId-1]);
+    int MaxPlayers = Cast<APingPongGameMode>(GetDefaultGameMode())->GameDefaults.Gameplay.MaxPlayers;
+    int ScoreTo = PlayerIngameId % MaxPlayers;
+    ++PlayerScores[ScoreTo];
+    SCREEN_LOG("Player {} got a score. Total: {}", ScoreTo + 1, PlayerScores[ScoreTo]);
 }
 
 void APingPongState::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Skip initialization in editor preview
-    if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor())
-    {
-        return;
-    }
-
-    PlayerScores.Init(0, Cast<APingPongGameMode>(GetDefaultGameMode())->GameDefaults.Gameplay.MaxPlayers);
+    int MaxPlayers = Cast<APingPongGameMode>(GetDefaultGameMode())->GameDefaults.Gameplay.MaxPlayers;
+    PlayerScores.Init(0, MaxPlayers);
 }

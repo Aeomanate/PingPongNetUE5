@@ -18,15 +18,6 @@ AScoreActor::AScoreActor()
 void AScoreActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (!HasAuthority())
-	{
-		return;
-	}
-
-	UWorld* World = GET_VALID_WORLD();
-	APingPongGameMode* GameMode = Cast<APingPongGameMode>(World->GetAuthGameMode());
-	Init(GameMode->GameDefaults.Gameplay.MaxScore);
 }
 
 // Called every frame
@@ -37,14 +28,13 @@ void AScoreActor::Tick(float DeltaTime)
 
 void AScoreActor::RotateScoreToPlayerCamera(FVector CameraLocation)
 {
-	UWorld* World = GET_VALID_WORLD();
-	APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(World);
-
+	Init(10);
 	FVector ScoreLocation = GetRootComponent()->GetComponentLocation();
 
 	FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(ScoreLocation, CameraLocation);
 	Rotator.SetComponentForAxis(EAxis::X, 0);
 	Rotator.SetComponentForAxis(EAxis::Y, 0);
 	GetRootComponent()->SetWorldRotation(Rotator);
+	
 }
 

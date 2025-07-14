@@ -17,34 +17,13 @@ APlayerPawn::APlayerPawn()
 	MovingSpeed = 20;
 	InverseAxisX = false;
 	MovableComponent = nullptr;
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Skip initialization in editor preview
-	if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor() && !IsLocallyControlled()
-)
-	{
-		return;
-	}
-	
-	APingPongPlayerState* State = GetPlayerState<APingPongPlayerState>();
-	if (!State)
-	{
-		return;
-	}
-
-	if (!HasAuthority())
-	{
-		SCREEN_WARNING("You are player #{}", State->PlayerIngameId);
-	}
-	else
-	{
-		SCREEN_LOG("You are server, created player #{}", State->PlayerIngameId);
-	}
 }
 
 void APlayerPawn::MoveLeftRightRPC_Implementation(float Bias)
@@ -53,7 +32,7 @@ void APlayerPawn::MoveLeftRightRPC_Implementation(float Bias)
 }
 
 void APlayerPawn::MoveLeftRightBroadcast_Implementation(float Bias)
-{
+{	
 	if (!MovableComponent)
 	{
 		return;
@@ -67,8 +46,6 @@ void APlayerPawn::MoveLeftRightBroadcast_Implementation(float Bias)
 	Transform.SetLocation(Transform.GetLocation() + MoveVector);
 	MovableComponent->AddWorldOffset(MoveVector, /* sweep */ true);
 }
-
-
 
 void APlayerPawn::SetMovableComponentIntoCache(UPrimitiveComponent* Component)
 {
@@ -86,5 +63,11 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis(TEXT("MovingLeftRight"), this, &APlayerPawn::MoveLeftRightRPC);
+
+	APingPongPlayerState* State = GetPlayerState<APingPongPlayerState>();
+	if (State)
+	{
+		SCREEN_WARNING("You are player #{}", State->PlayerIngameId);
+	}
 }
 

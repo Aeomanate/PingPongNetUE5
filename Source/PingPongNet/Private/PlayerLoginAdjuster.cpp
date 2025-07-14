@@ -24,7 +24,6 @@ bool UPlayerLoginAdjuster::Adjust()
 {
     bool SuccessPreparation = 
         CheckPrerequires() &&
-        SetValidPlayerController() &&
         SpawnPlayerPawn();
     if (!SuccessPreparation)
     {
@@ -58,10 +57,8 @@ bool UPlayerLoginAdjuster::CheckPrerequires() const
 
 bool UPlayerLoginAdjuster::SpawnPlayerPawn()
 {
-    UClass* PawnClass = Defaults->Field.Classes.PlayerPawn->GetDefaultObject()->GetClass();
     const FVector* SpawnPoint = &Defaults->Field.Players[PlayerIngameId-1].PawnSpawnPoint;
-
-    PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(PawnClass, SpawnPoint));
+    PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(Defaults->Field.Classes.PlayerPawn, SpawnPoint));
     if (!PlayerPawn)
     {
         SCREEN_ERROR("PlayerPawn for %d player not created!", PlayerIngameId);
@@ -88,15 +85,4 @@ void UPlayerLoginAdjuster::AdjustPlayerGate()
 {
     Defaults->Field.Players[PlayerIngameId-1].Gate->PlayerIngameId = PlayerIngameId;
     SCREEN_LOG("Gate installed for player with index {}!", PlayerIngameId);
-}
-
-bool UPlayerLoginAdjuster::SetValidPlayerController()
-{
-    if (!PlayerController)
-    {
-        SCREEN_ERROR("PlayerController invalid!");
-        return false;
-    }
-    SCREEN_LOG("PlayerController valid!");
-    return true;
 }

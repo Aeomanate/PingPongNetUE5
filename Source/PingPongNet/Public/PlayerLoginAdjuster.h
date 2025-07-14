@@ -23,8 +23,6 @@ private:
 
     void AdjustPlayerController();
     void AdjustPlayerGate();
-
-    bool SetValidPlayerController();
 private:
     int PlayerIngameId = { };
     FPingPongDefaults* Defaults = { };
