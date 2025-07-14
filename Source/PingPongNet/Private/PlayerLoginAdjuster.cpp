@@ -61,10 +61,10 @@ bool UPlayerLoginAdjuster::SpawnPlayerPawn()
     PlayerPawn = Cast<APlayerPawn>(World->SpawnActor(Defaults->Field.Classes.PlayerPawn, SpawnPoint));
     if (!PlayerPawn)
     {
-        SCREEN_ERROR("PlayerPawn for %d player not created!", PlayerIngameId);
+        SCREEN_ERROR("PlayerPawn for player {} not created!", PlayerIngameId);
         return false;
     }
-    SCREEN_LOG("Pawn installed for {} player!", PlayerIngameId);
+    SCREEN_LOG("Pawn created for player {}!", PlayerIngameId);
     return true;
 }
 
