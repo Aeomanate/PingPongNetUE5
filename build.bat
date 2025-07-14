@@ -1,6 +1,8 @@
 chcp 65001
 
-D:\Prog\Env\IDE\UE_5.5\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
+set UESourcesPath = D:\Prog\Env\IDE\UE_5.5
+
+%UESourcesPath%\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
 -project="%cd%\PingPongNet.uproject" ^
 -platform=Win64 ^
 -clientconfig=Shipping ^
@@ -10,7 +12,7 @@ D:\Prog\Env\IDE\UE_5.5\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
 
 pause
 
-D:\Prog\Env\IDE\UE_5.5\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
+%UESourcesPath%\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
 -project="%cd%\PingPongNet.uproject" ^
 -platform=Win64 ^ 
 -serverconfig=Shipping ^ 
