@@ -10,5 +10,7 @@ public class PingPongNetServerTarget : TargetRules
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		ExtraModuleNames.AddRange(new string[] { "PingPongNet" });
+		
+		bUseLoggingInShipping = true;
 	}
 }

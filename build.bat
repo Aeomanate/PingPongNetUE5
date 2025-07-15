@@ -1,13 +1,29 @@
+@echo off
 chcp 65001
 
 set UESourcesPath=D:\Prog\Env\Libraries\UnrealEngine
 set Project=%cd%\PingPongNet.uproject
-set Config=Shipping
+set Config=%1
 set StagePath=%cd%\Stage\%Config%
 set ArchPath=%cd%\Build\%Config%
 set Platform=Win64
 
-%UESourcesPath%\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
+echo Cleaning prev build
+rmdir /S /Q %ArchPath%
+mkdir %ArchPath%
+
+echo Copying starting scripts...
+copy /Y "%cd%\start_server.bat" "%ArchPath%"
+copy /Y "%cd%\start_client1.bat" "%ArchPath%"
+copy /Y "%cd%\start_client2.bat" "%ArchPath%"
+
+echo Starting UAT BuildCookRun...
+echo Project: %Project%
+echo Config: %Config%
+
+explorer %ArchPath%
+
+start "" %UESourcesPath%\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
 -project=%Project% ^
 -platform=%Platform% ^
 -clientconfig=%Config% ^
@@ -15,4 +31,7 @@ set Platform=Win64
 -archivedirectory=%ArchPath% ^
 -stagingdirectory=%StagePath% ^
 -build -client -server -allmaps ^
--cook -stage -pak -archive
+-cook -stage -pak -archive ^
+-crashreporter
+
+pause

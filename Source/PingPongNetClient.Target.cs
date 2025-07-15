@@ -10,5 +10,7 @@ public class PingPongNetClientTarget : TargetRules
 		Type = TargetType.Client;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		ExtraModuleNames.AddRange(new string[] { "PingPongNet" });
+		
+		// bUseLoggingInShipping = true;
 	}
 }
