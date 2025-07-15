@@ -9,7 +9,20 @@ set ArchPath=%cd%\Build\%Config%
 set Platform=Win64
 
 echo Cleaning prev build
-rmdir /S /Q %ArchPath%
+:: Backup old build if it exists
+if exist "%ArchPath%" (
+    setlocal enabledelayedexpansion
+    set counter=1
+    :find_available_name
+    if exist "%ArchPath%_Old(!counter!)" (
+        set /a counter+=1
+        goto find_available_name
+    )
+    echo Moving existing build to %ArchPath%_Old(!counter!)
+    move "%ArchPath%" "%ArchPath%_Old(!counter!)"
+    endlocal
+)
+
 mkdir %ArchPath%
 
 echo Copying starting scripts...

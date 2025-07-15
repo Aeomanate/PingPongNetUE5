@@ -9,6 +9,8 @@
 #include "PingPongState.h"
 #include "PingPongPlayerState.h"
 
+#include "Logging/LogMacros.h"
+
 
 bool APingPongGameMode::ReadyToStartMatch_Implementation()
 {
@@ -58,6 +60,15 @@ void APingPongGameMode::BeginPlay()
 
 	SCREEN_LOG("GameMode BeginPlay - actual gameplay session");
 	SCREEN_WARNING("Running as NetMode: {}", GetNetModeString());
+	
+	if (!IsRunningDedicatedServer())
+	{
+		FString ExecCommand = FString::Printf(TEXT("open %s"), *ServerAddress);
+		WARNING("Connecting to server: %s", *ExecCommand);
+
+		bool Result = GEngine->Exec(GET_VALID_WORLD(), *ExecCommand);
+		WARNING("Executed: {}", Result);
+	}
 }
 
 void APingPongGameMode::HandleMatchHasStarted()

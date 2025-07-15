@@ -1,6 +1,6 @@
 @echo off
 chcp 65001
 
-start %cd%\build.bat Development
+start %cd%\_build.bat Development
 
 pause

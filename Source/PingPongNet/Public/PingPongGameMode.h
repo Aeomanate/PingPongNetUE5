@@ -50,4 +50,9 @@ public: // Members
     FPingPongDefaults GameDefaults;
 
     bool IsMatchReady = false;
+
+private:
+    // The server address to connect to
+    UPROPERTY(Config)
+    FString ServerAddress;
 };

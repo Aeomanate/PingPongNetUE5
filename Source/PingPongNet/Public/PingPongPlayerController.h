@@ -27,4 +27,6 @@ public:
 	AScoreActor* FindScoreActor() const;
 	
 	void BeginPlay() override;
+
+private:
 };
