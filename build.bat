@@ -2,9 +2,9 @@ chcp 65001
 
 set UESourcesPath=D:\Prog\Env\Libraries\UnrealEngine
 set Project=%cd%\PingPongNet.uproject
-set StagePath=%cd%\Stage
-set ArchPath=%cd%\Build
-set Config=Development
+set Config=Shipping
+set StagePath=%cd%\Stage\%Config%
+set ArchPath=%cd%\Build\%Config%
 set Platform=Win64
 
 %UESourcesPath%\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun ^
@@ -15,5 +15,4 @@ set Platform=Win64
 -archivedirectory=%ArchPath% ^
 -stagingdirectory=%StagePath% ^
 -build -client -server -allmaps ^
--cook -stage -pak -archive ^
--nocompileeditor -compressed -multiprocess -NumCookers=7
+-cook -stage -pak -archive
