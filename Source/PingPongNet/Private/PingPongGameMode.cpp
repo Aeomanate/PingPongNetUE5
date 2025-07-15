@@ -12,13 +12,7 @@
 
 bool APingPongGameMode::ReadyToStartMatch_Implementation()
 {
-	// On dedicated server, wait for required number of players
-	if (GetNetMode() == NM_DedicatedServer)
-	{
-		return IsMatchReady;
-	}
-	// For standalone or listen server, allow starting with fewer players
-	return true;
+	return IsMatchReady;
 }
 
 bool APingPongGameMode::ReadyToEndMatch_Implementation()
@@ -30,7 +24,6 @@ void APingPongGameMode::OnPostLogin(AController* NewPlayer)
 {
 	int PlayerIngameId = NewPlayer->GetPlayerState<APingPongPlayerState>()->PlayerIngameId = NumPlayers;
 
-	// Update match readiness based on player count
 	if (NumPlayers == GameDefaults.Gameplay.MaxPlayers)
 	{
 		IsMatchReady = true;
@@ -58,20 +51,13 @@ void APingPongGameMode::OnBallTriggersGate(int PlayerIngameId) const
 
 void APingPongGameMode::BeginPlay()
 {
-	// Skip initialization in editor preview
 	if (GetWorld()->IsEditorWorld() && !GetWorld()->IsPlayInEditor())
 	{
 		return;
 	}
 
-	// For standalone or PIE, we need to initialize even if we don't have all players
-	if (!GET_VALID_WORLD())
-	{
-		return;
-	}
-
 	SCREEN_LOG("GameMode BeginPlay - actual gameplay session");
-	SCREEN_LOG("Running as NetMode: {}", GetNetModeString());
+	SCREEN_WARNING("Running as NetMode: {}", GetNetModeString());
 }
 
 void APingPongGameMode::HandleMatchHasStarted()
@@ -79,7 +65,7 @@ void APingPongGameMode::HandleMatchHasStarted()
 	Super::HandleMatchHasStarted();
 
 	// Only spawn the ball on server (dedicated or listen)
-	if (GetNetMode() == NM_DedicatedServer || GetNetMode() == NM_ListenServer || GetNetMode() == NM_Standalone)
+	if (GetNetMode() == NM_DedicatedServer || GetNetMode() == NM_ListenServer)
 	{
 		SpawnBall();
 		SCREEN_LOG("Match started - ball spawned");
