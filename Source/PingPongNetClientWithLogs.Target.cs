@@ -3,12 +3,14 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class PingPongNetClientTarget : TargetRules
+public class PingPongNetClientWithLogsTarget : TargetRules
 {
-	public PingPongNetClientTarget(TargetInfo Target) : base(Target)
+	public PingPongNetClientWithLogsTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Client;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		ExtraModuleNames.AddRange(new string[] { "PingPongNet" });
+		
+		bUseLoggingInShipping = true;
 	}
 }
